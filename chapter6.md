@@ -44,3 +44,64 @@
       - Their ratio is the confidence of the rule J - {j} -> j
     - Assumed that there are not too many frequent itemsets.
       - Adjust support threshold so we don't get too many items
+
+## A-Priori Algorithm (6.2)
+- As size of the subsets we want to generate gets larger, the time required grows larger; in fact takes approximately time nᵏ/k! to generate all the subsets of size k for a basket with n items.
+- Often we only need small frequent itemsets so k is around 2 or 3.
+- If we need large k, can often eliminate many of the items in each basket so the value of n drops as k increases.
+
+### Representing Pairs
+  - We can represent pairs of n items with integer pairs and translate using a hash table from integer to item.
+
+### Triangluar-Matrix Method
+  - Can easily store the pairs {i,j} in a two-dimensional array
+  - Half of the array becomes useless since we only want to count a pair once
+  - One solution is to use a one-dimensional triangular array, call this array A
+    - Store in A[k] the count for the pair {i,j} for 1 <= i < j <= n, where
+    - k = (i - 1)(n - i/2) + j - i
+    - Pairs are stored in lexicographic order: {1,2}, {1,3},...,{1,n}, then {2,3}, {2,4},...,{2,n}, etc.
+
+### Triples Method
+  - Store count, c, of the pair {i,j} with i < j
+  - Use hash table with i and j as the search key
+  - Don't need to store counts with 0, but need to store three integers
+  - Triangular matrix is better if at least 1/3 of the possible pairs actually appear in some basket
+  - If significantly fewer than 1/3 of possible pairs occur, we should consider triples method
+
+### Monotonicity of Itemsets
+  - *Monotonicity*: If a set I of items is frequent, then so is every subset of I.
+  - If we are given a support threshold s, then we say an itemset is *maximal* if no superset is frequent.
+  - If we only list maximal itemsets, then we only all subsets of maximal itemsets are frequent, and no set that is not a subset of some maximal itemset can be frequent.
+
+### A-Priori
+  - The A-Priori Algorithm reduces the number of pairs that must be count but needs to make two passes over the data instead of one.
+
+#### The First Pass of A-Priori
+  - Create two tables
+  - First table translates item names into integers from 1 to n.
+  - Second table is an array of counts; the ith array element counts the occurences of the item numbered i.
+  - Read each item in a basket and translate its name into an integer.
+  - Use that integer to index into the array of counts, and we add 1 to the integer found there.
+  - After this pass we can examine the counts to determine frequent singletons
+
+#### Second Pass of A-Priori
+  - Use new numbering from 1 to m for just the frequent items
+  - Create a new table, the frequent-items table, indexed 1 to n, and the entry for i is either 0, if item i is not frequent, or a unique integer in the range 1 to m if the item i is frequent.
+  - Count all pairs of two frequent items.
+  - A pair cannot be frequent unless both its members are frequent so we find all frequent pairs.
+  - Space used is 2m² bytes rather than 2n² bytes, if we use the triangluar-matrix method for counting
+  - The algorithm for the second pass is described below
+  1. For each basket, look at the frequent-items table to see which of its items are frequent.
+  2. Generate all pairs of frequent items in that basket (double loop)
+  3. For each pair, add one to its count in the data structure used to store counts
+  - Examine the structure of counts to determine which pairs are frequent.
+
+#### A-Priori for All Frequent Itemsets
+  - Take one pass for each set-size k
+  - If no frequent itemsets are a certain size are found, then monotonicity tells us there can be no larger frequent itemsets.
+  - Moving from one size k to the next size k + 1 is as follow:
+    1. C_{k} is the set of candidate itemsets of size k, every k - 1 of which is an itemset in L_{k - 1}:
+      - The itemsets that we must count in order to determine whether they are in fact frequent.
+    2. L_{k} is the set of truely frequent itemsets of size k.
+      - Find this by making a pass through the baskets and counting all and only the itemsets of size k that are in C_{k}.
+      - Those itemsets that have count at least s are in L_k
