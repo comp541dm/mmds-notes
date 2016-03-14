@@ -164,9 +164,15 @@ An important decision that must be examined is how we decide whether a new point
 #### Exercises
 Exercise 7.3.1
   - For the points of Fig. 7.8, if we select three starting points using the method of Section 7.3.2, and the first point we choose is (3,4), which other points are selected.
+  ```
+ (2, 2) and (5, 2)
+  ```
 
 Exercise 7.3.3
   - Give an example of a dataset and a selection of k initial centroids such that when the points are reassigned to their nearest centroid at the end, at least one of the initial k points is reassigned to a different cluster.
 
 Exercise 7.3.5
   - Suppose a cluster of three-dimensional points has standard deviations of 2, 3, and 5, in the three dimensions, in that order. Compute the Mahalanobis distance between the origin (0, 0, 0) and the point (1, −3, 4).
+  ```
+  1.375
+  ```
